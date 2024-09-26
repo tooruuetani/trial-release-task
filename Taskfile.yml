@@ -3,7 +3,7 @@ version: "3"
 tasks:
   create-release:
     cmds:
-      - echo v{{.CAL_VER}}>VERSION
+      - echo {{.CAL_VER}}>VERSION
       - git add VERSION
       - git commit -m "{{.MSG}}"
       - git push --set-upstream origin {{.BRANCH}}
@@ -24,8 +24,8 @@ tasks:
         sh: git rev-parse --abbrev-ref HEAD
       CAL_VER:
         sh: ver={{.CURRENT}}; echo ${ver:8}
-      BRANCH: "release/v{{.CAL_VER}}"
-      MSG: "Bump up to v{{.CAL_VER}}"
+      BRANCH: "release/{{.CAL_VER}}"
+      MSG: "Bump up to {{.CAL_VER}}"
     preconditions:
       - sh: "[[ {{.CURRENT}} =~ ^release/v\\d+(\\.\\d+){1,2}$ ]]"
         msg: このタスクは "release/vXX.YY" ブランチで実行できます。 "{{.CURRENT}}" では実行できません。
