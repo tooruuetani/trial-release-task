@@ -16,7 +16,7 @@ tasks:
         vars:
           STAGE: 'prod'
           SUBSYSTEM: 'webapp'
-      - git chekcout main
+      - git checkout main
     vars:
       CALVER:
         sh: py -c "import datetime; print(datetime.date.today().strftime('%y.%m'))"
