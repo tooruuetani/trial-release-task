@@ -10,14 +10,14 @@ tasks:
       - git push --set-upstream origin {{.BRANCH}}
       - task: to_release
         vars:
+          BACK_BRANCH: {{.BRANCH}}
           STAGE: 'prod'
           SUBSYSTEM: 'events'
-      - git checkout {{.BRANCH}}
       - task: to_release
         vars:
+          BACK_BRANCH: 'main'
           STAGE: 'prod'
           SUBSYSTEM: 'webapp'
-      - git checkout main
       - gh pr create -w -a "@me" --base main --head {{.BRANCH}} --title "{{.MSG}}"
     vars:
       CALVER:
@@ -34,9 +34,12 @@ tasks:
     cmds:
       - git checkout -b {{.PR_HEAD}}
       - git push --set-upstream origin {{.PR_HEAD}}
+      - git checkout {{.BACK_BRANCH}}
+      - git branch -D {{.PR_HEAD}}
     vars:
       SHA:
         sh: t=`git rev-parse --short HEAD`; echo ${t:0:7}
       STAGE: '{{default "stg" .STAGE}}'
       SUBSYSTEM: '{{default "events" .SUBSYSTEM}}'
       PR_HEAD: "deploy/{{.SHA}}/{{.STAGE}}/{{.SUBSYSTEM}}"
+      BACK_BRANCH: '{{default "main" .BACK_BRANCH}}'
