@@ -1,6 +1,19 @@
 version: "3"
 
 tasks:
+  create-release-branch:
+    cmds:
+      - git checkout -b {{.BRANCH}}
+    vars:
+      CAL_VER:
+        sh: py -c "import datetime; print(datetime.date.today().strftime('v%y.%m'))"
+      CURRENT:
+        sh: git rev-parse --abbrev-ref HEAD
+      BRANCH: "release/{{.CAL_VER}}"
+    preconditions:
+      - sh: "[[ {{.CURRENT}} =~ ^release/v\\d+(\\.\\d+){1,2}$ ]]"
+        msg: このタスクは "release/vXX.YY" ブランチで実行できます。 "{{.CURRENT}}" では実行できません。
+
   create-release:
     cmds:
       - echo {{.CAL_VER}}>VERSION
