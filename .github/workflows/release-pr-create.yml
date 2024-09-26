@@ -1,0 +1,36 @@
+name: release-pr-create
+on:
+  push:
+    branches:
+      - deploy/*/*/* # deploy/{sha}/{stage}/{system}
+jobs:
+  git-pr-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # git-pr-release needs the git histories
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.3
+      - run: gem install --no-document git-pr-release
+      - id: context
+        run: |
+          SHORT_SHA=$(echo ${{ github.ref_name }} | cut -d'/' -f2)
+          echo "sha=$SHORT_SHA" >> $GITHUB_OUTPUT
+          STAGE=$(echo ${{ github.ref_name }} | cut -d'/' -f3)
+          echo "stage=$STAGE" >> $GITHUB_OUTPUT
+          SYSTEM=$(echo ${{ github.ref_name }} | cut -d'/' -f4)
+          echo "system=$SYSTEM" >> $GITHUB_OUTPUT
+      - run: git-pr-release
+        if: ${{ steps.context.outputs.system == 'events' || steps.context.outputs.system == 'webapp' }}
+        env:
+          SHA: ${{ steps.context.outputs.sha }}
+          STAGE: ${{ steps.context.outputs.stage }}
+          SYSTEM: ${{ steps.context.outputs.system }}
+          GIT_PR_RELEASE_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GIT_PR_RELEASE_BRANCH_PRODUCTION: release/${{ steps.context.outputs.stage }}/${{ steps.context.outputs.system }}
+          GIT_PR_RELEASE_BRANCH_STAGING: ${{ github.ref_name }}
+          GIT_PR_RELEASE_LABELS: release,${{ steps.context.outputs.stage }},${{ steps.context.outputs.system }}
+          GIT_PR_RELEASE_TEMPLATE: .github/workflows/release-pr-create.erb
+          TZ: Asia/Tokyo
