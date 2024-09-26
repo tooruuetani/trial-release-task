@@ -11,8 +11,8 @@ tasks:
         sh: git rev-parse --abbrev-ref HEAD
       BRANCH: "release/{{.CAL_VER}}"
     preconditions:
-      - sh: "[[ {{.CURRENT}} =~ ^release/v\\d+(\\.\\d+){1,2}$ ]]"
-        msg: このタスクは "release/vXX.YY" ブランチで実行できます。 "{{.CURRENT}}" では実行できません。
+      - sh: "[[ {{.CURRENT}} =~ ^(main|HEAD)$ ]]"
+        msg: このタスクは "main" ブランチ or HEADで実行できます。 "{{.CURRENT}}" では実行できません。
 
   create-release:
     cmds:
