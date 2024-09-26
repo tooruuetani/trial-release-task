@@ -3,25 +3,29 @@ version: "3"
 tasks:
   create-release:
     cmds:
-      - git checkout -b release/v{{.CALVER}}
+      - git checkout -b {{.BRANCH}}
       - echo v{{.CALVER}}>VERSION
       - git add VERSION
-      - git commit -m "Bump up to v{{.CALVER}}."
-      - git push --set-upstream origin release/v{{.CALVER}}
+      - git commit -m "{{.MSG}}"
+      - git push --set-upstream origin {{.BRANCH}}
       - task: to_release
         vars:
           STAGE: 'prod'
           SUBSYSTEM: 'events'
+      - git checkout release/v{{.CALVER}}
       - task: to_release
         vars:
           STAGE: 'prod'
           SUBSYSTEM: 'webapp'
       - git checkout main
+      - gh pr create -w -a "@me" --base main --head {{.BRANCH}} --title "{{.MSG}}"
     vars:
+      BRANCH: "release/v{{.CALVER}}"
       CALVER:
         sh: py -c "import datetime; print(datetime.date.today().strftime('%y.%m'))"
       CURRENT:
         sh: git rev-parse --abbrev-ref HEAD
+      msg: "Bump up to v{{.CALVER}}"
     preconditions:
       - sh: "[[ {{.CURRENT}} =~ ^(main|HEAD)$ ]]"
         msg: このタスクは "main" ブランチ or HEADで実行できます。 "{{.CURRENT}}" では実行できません。
@@ -30,10 +34,7 @@ tasks:
     cmds:
       - git checkout -b {{.PR_HEAD}}
       - git push --set-upstream origin {{.PR_HEAD}}
-      - git checkout {{.CURRENT}}
     vars:
-      CURRENT:
-        sh: git rev-parse --abbrev-ref HEAD
       SHA:
         sh: t=`git rev-parse --short HEAD`; echo ${t:0:7}
       STAGE: '{{default "stg" .STAGE}}'
