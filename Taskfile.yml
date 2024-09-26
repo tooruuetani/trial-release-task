@@ -12,7 +12,7 @@ tasks:
         vars:
           STAGE: 'prod'
           SUBSYSTEM: 'events'
-      - git checkout release/v{{.CALVER}}
+      - git checkout {{.BRANCH}}
       - task: to_release
         vars:
           STAGE: 'prod'
@@ -25,7 +25,7 @@ tasks:
         sh: py -c "import datetime; print(datetime.date.today().strftime('%y.%m'))"
       CURRENT:
         sh: git rev-parse --abbrev-ref HEAD
-      msg: "Bump up to v{{.CALVER}}"
+      MSG: "Bump up to v{{.CALVER}}"
     preconditions:
       - sh: "[[ {{.CURRENT}} =~ ^(main|HEAD)$ ]]"
         msg: このタスクは "main" ブランチ or HEADで実行できます。 "{{.CURRENT}}" では実行できません。
