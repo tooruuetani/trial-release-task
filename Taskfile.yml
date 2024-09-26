@@ -3,8 +3,7 @@ version: "3"
 tasks:
   create-release:
     cmds:
-      - git checkout -b {{.BRANCH}}
-      - echo v{{.CALVER}}>VERSION
+      - echo v{{.CAL_VER}}>VERSION
       - git add VERSION
       - git commit -m "{{.MSG}}"
       - git push --set-upstream origin {{.BRANCH}}
@@ -21,15 +20,15 @@ tasks:
       - gh pr create -w -a "@me" --base main --head {{.BRANCH}} --title "{{.MSG}}"
       - git branch -D {{.BRANCH}}
     vars:
-      CALVER:
-        sh: py -c "import datetime; print(datetime.date.today().strftime('%y.%m'))"
       CURRENT:
         sh: git rev-parse --abbrev-ref HEAD
-      BRANCH: "release/v{{.CALVER}}"
-      MSG: "Bump up to v{{.CALVER}}"
+      CAL_VER:
+        sh: ver={{.CURRENT}}; echo ${ver:8}
+      BRANCH: "release/v{{.CAL_VER}}"
+      MSG: "Bump up to v{{.CAL_VER}}"
     preconditions:
-      - sh: "[[ {{.CURRENT}} =~ ^(main|HEAD)$ ]]"
-        msg: このタスクは "main" ブランチ or HEADで実行できます。 "{{.CURRENT}}" では実行できません。
+      - sh: "[[ {{.CURRENT}} =~ ^release/v\\d+(\\.\\d+){1,2}$ ]]"
+        msg: このタスクは "release/vXX.YY" ブランチで実行できます。 "{{.CURRENT}}" では実行できません。
 
   to_release:
     cmds:
