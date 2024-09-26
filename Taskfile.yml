@@ -10,7 +10,7 @@ tasks:
       - git push --set-upstream origin {{.BRANCH}}
       - task: to_release
         vars:
-          BACK_BRANCH: {{.BRANCH}}
+          BACK_BRANCH: '{{.BRANCH}}'
           STAGE: 'prod'
           SUBSYSTEM: 'events'
       - task: to_release
