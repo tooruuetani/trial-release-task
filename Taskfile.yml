@@ -5,6 +5,7 @@ tasks:
     cmds:
       - git checkout -b release/v{{.CALVER}}
       - echo v{{.CALVER}}>VERSION
+      - git add VERSION
       - git commit -m "Bump up to v{{.CALVER}}."
       - git push --set-upstream origin release/v{{.CALVER}}
       - task: to_release
