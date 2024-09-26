@@ -19,6 +19,8 @@ tasks:
     vars:
       CALVER:
         sh: py -c "import datetime; print(datetime.date.today().strftime('%y.%m'))"
+      CURRENT:
+        sh: git rev-parse --abbrev-ref HEAD
     preconditions:
       - sh: "[[ {{.CURRENT}} =~ ^(main|HEAD)$ ]]"
         msg: このタスクは "main" ブランチ or HEADで実行できます。 "{{.CURRENT}}" では実行できません。
