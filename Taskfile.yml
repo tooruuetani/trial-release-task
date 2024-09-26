@@ -20,11 +20,11 @@ tasks:
       - git checkout main
       - gh pr create -w -a "@me" --base main --head {{.BRANCH}} --title "{{.MSG}}"
     vars:
-      BRANCH: "release/v{{.CALVER}}"
       CALVER:
         sh: py -c "import datetime; print(datetime.date.today().strftime('%y.%m'))"
       CURRENT:
         sh: git rev-parse --abbrev-ref HEAD
+      BRANCH: "release/v{{.CALVER}}"
       MSG: "Bump up to v{{.CALVER}}"
     preconditions:
       - sh: "[[ {{.CURRENT}} =~ ^(main|HEAD)$ ]]"
