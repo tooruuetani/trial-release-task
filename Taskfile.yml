@@ -19,6 +19,7 @@ tasks:
           STAGE: 'prod'
           SUBSYSTEM: 'webapp'
       - gh pr create -w -a "@me" --base main --head {{.BRANCH}} --title "{{.MSG}}"
+      - git branch -D {{.BRANCH}}
     vars:
       CALVER:
         sh: py -c "import datetime; print(datetime.date.today().strftime('%y.%m'))"
